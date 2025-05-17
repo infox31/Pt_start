@@ -42,8 +42,55 @@
     </div>
 
 
+<div class="row">
+    <form class="form_align" method="POST" action="profile.php" enctype="multipart/form-data" name="upload">
+    <input type="text" class="form form_width" type="text" name="title" placeholder="Saronosok вашего поста">
+    <textarea name="text" class="form_width" rows="18" placeholder="Введите текст вашего поста ..."></textarea>
+    <input type="file" name="file" /><br>
+    <button type="submit" class="btn_red" name="submit" value="upload">Сохранить пост!</button>
+</form>
+</div>
+
+
     <script src="js/button.js"></script>
    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
+
+
+
+<?php
+require_once('./bd.php');
+
+$link = mysqli_connect('127.0.0.1', 'root', 'kali', 'firstdb');
+
+if (isset($_POST['submit'])) {
+    $title = $_POST['title'];
+    $main_text = $_POST['text'];
+    if (!$title || !$main_text) die("Заполните все поля");
+
+    $sql = "INSERT INTO posts (title, main_text) VALUES ('$title', '$main_text')";
+
+    if(!mysqli_query($link, $sql)) {
+        die("не удалось добавить пост");
+    }
+    if(!empty($_FILES["file"]))
+    {
+        if (((@$_FILES["file"]["type"] == "image/gif") || (@$_FILES["file"]["type"] == "image/jpeg")
+        || (@$_FILES["file"]["type"] == "image/jpg") || (@$_FILES["file"]["type"] == "image/pjpeg")
+        || (@$_FILES["file"]["type"] == "image/x-png") || (@$_FILES["file"]["type"] == "image/png"))
+        && (@$_FILES["file"]["size"] < 10002400))
+        {
+            move_uploaded_file($_FILES["file"]["tmp_name"], "upload/" . $_FILES["file"]["name"]);
+            echo "Load in:  " . "upload/" . $_FILES["file"]["name"];
+        }
+        else
+        {
+            echo "upload failed!";
+        }
+    }
+}
+?>
